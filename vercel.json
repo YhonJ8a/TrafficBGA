@@ -1,9 +1,11 @@
 {
-    "functions": {
-        "api/**/*.js": {
-            "runtime": "nodejs20.x"
+    "version": 1,
+    "builds": [
+        {
+            "src": "/api/app.js",
+            "use": "@vercel/node"
         }
-    },
+    ],
     "routes": [
         {
             "src": "/(.*)",
