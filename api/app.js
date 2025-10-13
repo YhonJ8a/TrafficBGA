@@ -1,5 +1,4 @@
 import express from "express";
-import serverless from "serverless-http";
 
 const app = express();
 
@@ -13,4 +12,4 @@ app.get("/saludo", (req, res) => {
     res.json({ message: "Hola desde Express en Vercel" });
 });
 
-export default serverless(app);
+export default app;
