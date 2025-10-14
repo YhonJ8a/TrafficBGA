@@ -17,5 +17,17 @@ app.get("/", (req, res) => {
 
 app.use('/api', userRoutes);
 
+app.get('/db-status', async (req, res) => {
+  try {
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.query('SELECT 1');
+      res.json({ status: 'connected' });
+    } else {
+      res.status(500).json({ status: 'not connected' });
+    }
+  } catch (error) {
+    res.status(500).json({ status: 'error', error: error.message });
+  }
+});
 
 export default app
