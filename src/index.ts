@@ -1,5 +1,6 @@
+import "reflect-metadata";
 import express from 'express';
-import userRoutes from "./routes/routes.js";
+import userRoutes from "./routes/routes.ts";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -26,8 +27,17 @@ app.get('/db-status', async (req, res) => {
       res.status(500).json({ status: 'not connected' });
     }
   } catch (error) {
-    res.status(500).json({ status: 'error', error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ status: 'error', error: error.message });
+    } else {
+      res.status(500).json({ status: 'error', error: 'Unknown error occurred' });
+    }
   }
 });
+
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//   console.log(`Servidor corriendo en el puerto ${PORT} 🚀`);
+// });
 
 export default app

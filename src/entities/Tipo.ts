@@ -1,12 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from 'typeorm';
 import { Reporte } from './Reporte.js';
 
-@Entity('roles')
+@Entity('tipos')
 export class Tipo extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
-    @Column({ unique: true })
+    @Column({ type: 'varchar', unique: true })
     nombre!: string;
 
     @OneToMany(() => Reporte, (reporte) => reporte.tipo)
