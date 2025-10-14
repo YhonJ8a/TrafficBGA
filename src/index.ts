@@ -11,6 +11,11 @@ AppDataSource.initialize()
 
 const app = express()
 
+app.get("/", (req, res) => {
+  res.json({ message: "Servidor backend en Vercel funcionando 🚀" });
+});
+
 app.use('/api', userRoutes);
+
 
 export default app
