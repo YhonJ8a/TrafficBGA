@@ -4,21 +4,21 @@ import { Tipo } from './Tipo.js';
 @Entity('Reportes')
 export class Reporte {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id!: string;
 
-    @Column()
-    name: string;
+    @Column({ type: 'varchar' })
+    name!: string;
 
-    @Column()
-    ubicacion: string;
+    @Column({ type: 'varchar' })
+    ubicacion!: string;
 
-    @Column()
-    descripcion: string;
+    @Column({ type: 'text' })
+    descripcion!: string;
 
     @ManyToOne(() => Tipo, (tipo) => tipo.reportes, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'tipo_id' })
-    tipo: Tipo;
+    tipo!: Tipo | null;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-    fechaCreacion: Date;
+    fechaCreacion!: Date;
 }
