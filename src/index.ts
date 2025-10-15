@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/node", (req, res) => {
-  res.json({ message: `Servidor backend en Vercel funcionando 🚀 ${process.env.NODE_ENV}` });
+  res.json({ message: `Servidor backend en modo: ${process.env.NODE_ENV}` });
 });
 
 app.use('/api', userRoutes);
