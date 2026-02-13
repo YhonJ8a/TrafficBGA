@@ -1,24 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, CreateDateColumn, BaseEntity } from 'typeorm';
 import { Tipo } from './Tipo.js';
 
 @Entity('Reportes')
-export class Reporte {
+export class Reporte extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
     @Column({ type: 'varchar' })
-    name!: string;
+    title!: string;
 
     @Column({ type: 'varchar' })
     ubicacion!: string;
 
     @Column({ type: 'text' })
-    descripcion!: string;
+    snippet!: string;
 
-    @ManyToOne(() => Tipo, (tipo) => tipo.reportes, { nullable: true, onDelete: 'SET NULL' })
-    @JoinColumn({ name: 'tipo_id' })
-    tipo!: Tipo | null;
+    @Column({ type: 'int' })
+    size!: number;
 
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+    @Column({ type: 'varchar' })
+    latitude!: string;
+
+    @Column({ type: 'varchar' })
+    longitude!: string;
+
+    @OneToMany(() => Tipo, (tipo) => tipo.reportes)
+    // @JoinColumn({ name: 'tipo_id' })
+    iconName!: Tipo | null;
+
+    @CreateDateColumn({ type: "timestamp" })
     fechaCreacion!: Date;
 }

@@ -1,13 +1,12 @@
 import { Router } from "express";
 
 import Reportes from "./reportes/Reportes.js";
+import TipoReporte from "./tipo/TipoReporte.js";
 
 const router = Router()
 
-router.get("/", (req, res) => {
-    res.json({ message: "Servidor backend en Vercel funcionando 🚀 y muestra la api" });
-});
+router.use('/reportes', Reportes);
 
-router.post('/reportes', Reportes);
+router.use('/tipos', TipoReporte);
 
 export default router;

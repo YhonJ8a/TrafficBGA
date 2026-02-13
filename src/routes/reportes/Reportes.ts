@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { allReportes, getReporte } from "../../controllers/ResporteController.js";
+import { allReportes, createResidente, getReporte } from "../../controllers/ResporteController";
 
 
 const router = Router()
@@ -9,12 +9,6 @@ router.get("/", allReportes);
 
 router.get("/:id", getReporte);
 
-// router.post("/", createUser);
-
-// router.put("/:id", updateUser);
-
-// router.get("/pedidos/:id", getUserPedidos);
-
-// router.get("/ventas/:id", getUserVentas);
+router.post("/", createResidente);
 
 export default router;

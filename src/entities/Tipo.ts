@@ -1,14 +1,20 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BaseEntity } from 'typeorm';
 import { Reporte } from './Reporte.js';
 
-@Entity('tipos')
+@Entity('tipo_reporte')
 export class Tipo extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
     @Column({ type: 'varchar', unique: true })
-    nombre!: string;
+    iconName!: string;
 
-    @OneToMany(() => Reporte, (reporte) => reporte.tipo)
+    @Column({ type: 'int' })
+    hideAfterZoom!: number;
+
+    @Column({ type: 'varchar' })
+    description!: string;
+
+    @ManyToOne(() => Reporte, (reporte) => reporte.iconName)
     reportes!: Reporte[];
 }
