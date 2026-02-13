@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../database/db.js";
-import { Tipo } from "../entities/Tipo.js";
+import { Tipo } from "../entities/TipoReportes.js";
 
 const typeRepository = AppDataSource.getRepository(Tipo);
 

@@ -1,27 +1,19 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../database/db.js";
-import { Reporte } from "../entities/Reporte.js";
-import { Tipo } from "../entities/Tipo.js";
+import { Reportes } from "../entities/Reportes.js";
+import { TipoReportes } from "../entities/TipoReportes.js";
+import { ReportesService } from "../services/ReportesService";
 
-const reporteRepository = AppDataSource.getRepository(Reporte);
-const tipoRepository = AppDataSource.getRepository(Tipo);
+const reporteRepository = AppDataSource.getRepository(Reportes);
+const tipoRepository = AppDataSource.getRepository(TipoReportes);
+const reportesService = new ReportesService();
 
 export const allReportes = async (req: Request, res: Response): Promise<void> => {
     try {
-        const users = await reporteRepository
-            .find({ relations: ['iconName'] });
-
-        users.length ?
-            res.success(users) :
-            res.status(201).success({ message: "No se encontraron reportes" });
-
-        return;
-    } catch (error) {
-        if (error instanceof Error) {
-            console.log(error);
-            res.status(500).error(error.message);
-        }
-        return;
+        const reportes = await reportesService.obtenerReportesActivos();
+        res.success(reportes);
+    } catch (error: any) {
+        res.error(error.message, 500);
     }
 }
 
