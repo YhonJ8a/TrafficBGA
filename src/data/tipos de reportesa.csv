@@ -1,0 +1,8 @@
+id,iconName,hideAfterZoom,description
+202564b7-06fe-11f1-8a8a-089798eebe36,Fotomulta,11,"Hay una Fotomulta en la via"
+2b5c5dfa-06fe-11f1-8a8a-089798eebe36,Trafico,12,"Hay Tráfico en la via"
+2fc0f217-06fe-11f1-8a8a-089798eebe36,Choque,11,"Hay un choque en la via"
+3256d696-06fe-11f1-8a8a-089798eebe36,Alerta,10,"Estar Alerta en la via"
+3523b491-06fe-11f1-8a8a-089798eebe36,Cierre,12,"Hay un cierre en la via"
+37059300-06fe-11f1-8a8a-089798eebe36,Obra,12,"Hay una Obra en la via"
+674bec26-06fe-11f1-8a8a-089798eebe36,Transito,11,"Hay oficiales de transito en la via"

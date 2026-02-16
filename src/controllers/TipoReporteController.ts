@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../database/db.js";
-import { Tipo } from "../entities/TipoReportes.js";
+import { TipoReportes } from "../entities/TipoReportes.js";
 
-const typeRepository = AppDataSource.getRepository(Tipo);
+const typeRepository = AppDataSource.getRepository(TipoReportes);
 
 export const allTypes = async (req: Request, res: Response): Promise<void> => {
 
