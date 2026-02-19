@@ -31,7 +31,7 @@ AppDataSource.initialize()
         });
 
         const reportesService = new ReportesService();
-        cron.schedule('*/1 * * * *', async () => {
+        cron.schedule('*/5 * * * *', async () => {
             console.log('🔍 Verificando reportes expirados...');
             const expirados = await reportesService.marcarReportesExpirados();
 

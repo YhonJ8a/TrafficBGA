@@ -7,7 +7,7 @@ import { responseFormatter } from './middlewares/responseFormatter.ts';
 const app = express()
 
 app.use(cors({
-    origin: `http://localhost:${process.env.PORT}`,
+    origin: `http://localhost:${process.env.PORT}/api`,
     credentials: true
 }));
 

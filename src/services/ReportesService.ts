@@ -27,8 +27,8 @@ export class ReportesService {
         const reporte = new Reportes();
         reporte.title = data.title;
         reporte.description = data.description;
-        reporte.latitude = data.latitude;
-        reporte.longitude = data.longitude;
+        reporte.latitude = Number(Number(data.latitude).toFixed(5));
+        reporte.longitude = Number(Number(data.longitude).toFixed(5));
         reporte.tipoReporte = tipoReporte;
         reporte.tipoReporte_id = data.tipoReporte_id;
         reporte.fechaReporte = new Date();
