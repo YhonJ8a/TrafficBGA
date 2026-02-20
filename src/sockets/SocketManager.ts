@@ -113,7 +113,6 @@ export class SocketManager {
         }
     }
 
-    // Notificar actualización de reporte
     async notificarActualizacionReporte(reporte: any) {
         console.log(`🔄 Notificando actualización de reporte: ${reporte.id}`);
 
