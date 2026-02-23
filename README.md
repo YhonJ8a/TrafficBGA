@@ -22,3 +22,8 @@ To deploy:
 npm install
 vc deploy
 ```
+
+cd ml-service
+python -m venv venv
+venv\Scripts\activate
+python app.py
