@@ -221,9 +221,11 @@ export class TrafficPredictionService {
         }
     }
 
-    async predictNextHours(routeName: string, hours: number = 24): Promise<any[]> {
+    async predictNextHours(routeName: string, hours: number = 12): Promise<any[]> {
         const now = new Date();
         const historicalData = await this.getHistoricalAverage(routeName);
+
+        console.log(historicalData);
 
         const batchInput = [];
         for (let i = 0; i < hours; i++) {
@@ -246,7 +248,11 @@ export class TrafficPredictionService {
 
             return response.data.predictions.map((pred: any, index: number) => ({
                 hour: (now.getHours() + index) % 24,
-                ...pred
+                ...pred,
+                coods: {
+                    origen: { latitud: historicalData.originLat, longitud: historicalData.originLng },
+                    destino: { latitud: historicalData.destLat, longitud: historicalData.destLng }
+                }
             }));
         } catch (error: any) {
             throw new Error(`Error en predicción por lote: ${error.message}`);
@@ -418,3 +424,4 @@ export class TrafficPredictionService {
             .getCount();
     }
 }
+
