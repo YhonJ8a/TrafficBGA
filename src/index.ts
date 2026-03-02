@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { AppDataSource } from "./database/db.js";
 import { SocketManager } from "./sockets/SocketManager.js";
 import { ReportesService } from './services/ReportesService';
+import { BaileysWhatsAppService } from "./services/BaileysWhatsAppService.js";
 
 dotenv.config();
 
@@ -21,14 +22,24 @@ const io = new Server(httpServer, {
 
 const socketManager = new SocketManager(io);
 
+let whatsappBot: BaileysWhatsAppService;
+
 AppDataSource.initialize()
-    .then(() => {
+    .then(async () => {
         console.log('Conexión a MySQL establecida correctamente');
 
         const PORT = process.env.PORT || 3030;
         httpServer.listen(PORT, () => {
             console.log(`🚀 Server running on port http://localhost:${PORT}/api`);
         });
+
+        if (process.env.WHATSAPP_GROUP_ID) {
+            console.log('\n🤖 Iniciando WhatsApp Bot...');
+            whatsappBot = new BaileysWhatsAppService();
+            await whatsappBot.connect();
+        } else {
+            console.log('\n⚠️  WhatsApp Bot deshabilitado (falta WHATSAPP_GROUP_ID en .env)');
+        }
 
         const reportesService = new ReportesService();
         cron.schedule('*/5 * * * *', async () => {
@@ -45,6 +56,14 @@ AppDataSource.initialize()
     });
 
 (global as any).socketManager = socketManager;
+
+process.on('SIGINT', () => {
+    console.log('\n👋 Cerrando aplicación...');
+    if (whatsappBot) {
+        whatsappBot.disconnect();
+    }
+    process.exit(0);
+});
 
 // (async () => {
 

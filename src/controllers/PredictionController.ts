@@ -5,6 +5,21 @@ import { PredictionOutput } from "../services/TrafficPredictionService";
 
 const predictionService = new TrafficPredictionService();
 
+const AllRoutes = ROUTES_INFO.flatMap(route => [
+    {
+        name: `${route.name} (ida)`,
+        origin: route.origin,
+        destination: route.destination,
+        direction: 'ida'
+    },
+    {
+        name: `${route.name} (vuelta)`,
+        origin: route.destination,
+        destination: route.origin,
+        direction: 'vuelta'
+    }
+]);
+
 export const checkMLService = async (req: Request, res: Response): Promise<void> => {
     try {
         const isActive = await predictionService.checkMLService();
@@ -64,7 +79,13 @@ export const predictAllRoutes = async (req: Request, res: Response): Promise<voi
         const errors: { routeName: string; error: string }[] = [];
 
         // Predecir cada ruta en paralelo (más rápido)
-        const predictionPromises = AVAILABLE_ROUTES.map(async (routeName): Promise<{ success: boolean; routeName: string; prediction?: PredictionOutput; error?: string }> => {
+        const predictionPromises = AVAILABLE_ROUTES.map(async (routeName): Promise<{
+            success: boolean;
+            routeName: string;
+            prediction?: PredictionOutput;
+            ruta?: typeof ROUTES_INFO[0];
+            error?: string
+        }> => {
             try {
                 const prediction = await predictionService.predict({
                     routeName,
@@ -74,10 +95,12 @@ export const predictAllRoutes = async (req: Request, res: Response): Promise<voi
                     isWeekend: targetDate.getDay() === 0 || targetDate.getDay() === 6
                 });
 
+                const ruta = AllRoutes.find(route => route.name === routeName);
+
                 return {
                     success: true,
                     routeName,
-                    prediction
+                    prediction: { ...prediction, ruta },
                 };
             } catch (error: any) {
                 return {
@@ -141,20 +164,7 @@ export const predictAllRoutes = async (req: Request, res: Response): Promise<voi
 
 export const getRoutes = async (req: Request, res: Response): Promise<void> => {
     try {
-        const routes = ROUTES_INFO.flatMap(route => [
-            {
-                name: `${route.name} (ida)`,
-                origin: route.origin,
-                destination: route.destination,
-                direction: 'ida'
-            },
-            {
-                name: `${route.name} (vuelta)`,
-                origin: route.destination,
-                destination: route.origin,
-                direction: 'vuelta'
-            }
-        ]);
+        const routes = AllRoutes;
 
         res.success({
             routes,

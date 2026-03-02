@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { AppDataSource } from '../database/db';
 import { TrafficRouteData } from '../entities/TrafficRouteData';
+import { ROUTES_INFO } from '../data/constantes';
 
 export interface PredictionInput {
     routeName: string;
@@ -63,6 +64,7 @@ export interface PredictionOutput {
         modelVersion: string;
         dataQuality: 'high' | 'medium' | 'low';
     };
+    ruta?: typeof ROUTES_INFO[0];
 }
 
 export class TrafficPredictionService {
