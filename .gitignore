@@ -10,7 +10,8 @@
 
 # deps
 node_modules/
-
+whatsapp_auth/
+wwebjs_cache/
 # env
 .env
 .env.production
@@ -29,3 +30,5 @@ lerna-debug.log*
 .vercel
 
 .vercel
+.whatsapp_auth
+.wwebjs_cache
