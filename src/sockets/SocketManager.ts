@@ -28,7 +28,7 @@ export class SocketManager {
             socket.on('actualizar-ubicacion', async (data: { latitude: number; longitude: number; radioKm?: number }) => {
                 console.log(`📍 Ubicación actualizada para ${socket.id}:`, data);
 
-                const radioKm = data.radioKm || 2; // Por defecto 2km
+                const radioKm = data.radioKm || 20;
 
                 this.clientesConectados.set(socket.id, {
                     socketId: socket.id,
@@ -37,13 +37,12 @@ export class SocketManager {
                     radioKm
                 });
 
-                // Enviar reportes activos iniciales en su área
                 try {
                     const reportes = await this.reportesService.obtenerReportesPorRadio(
                         data.latitude,
                         data.longitude,
                         radioKm,
-                        true // Solo activos
+                        true
                     );
 
                     socket.emit('reportes-cercanos', {
@@ -90,7 +89,7 @@ export class SocketManager {
 
     // Notificar nuevo reporte a clientes cercanos
     async notificarNuevoReporte(reporte: any) {
-        console.log(`📢 Notificando nuevo reporte: ${reporte.id}`);
+        console.log(`Notificando nuevo reporte: ${reporte.id}`);
 
         for (const [socketId, cliente] of this.clientesConectados) {
             const distancia = this.calcularDistancia(

@@ -67,7 +67,7 @@ const ROUTES = [
     },
 ];
 
-async function recolectarTrafico() {
+export async function recolectarTrafico() {
     try {
         const repository = AppDataSource.getRepository(TrafficRouteData);
 
@@ -95,8 +95,6 @@ async function recolectarTrafico() {
                     );
 
                     const element = result.data.rows[0].elements[0];
-
-                    console.log(element);
 
                     const durationNormal = element.duration.value;
                     const durationTraffic = element.duration_in_traffic.value;
@@ -137,13 +135,13 @@ async function recolectarTrafico() {
             }
         }
 
-        console.log("📊 Recolección completada");
+        console.log("📊 Recolección completada" + new Date().toLocaleString());
 
-        process.exit(0);
+        // process.exit(0);
 
     } catch (err) {
         console.error("❌ Error general:", err);
-        process.exit(1);
+        // process.exit(1);
     }
 }
 

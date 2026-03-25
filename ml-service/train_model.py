@@ -285,7 +285,7 @@ if __name__ == "__main__":
     predictor = TrafficPredictor()
     
     try:
-        results = predictor.train(days_back=7)
+        results = predictor.train(days_back=40)
         print("\n" + "="*60)
         print(json.dumps(results, indent=2))
         

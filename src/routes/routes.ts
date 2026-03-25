@@ -21,5 +21,4 @@ router.use('/prediction', prediction);
 
 router.use('/whatsapp', botWhatsapp);
 
-
 export default router;

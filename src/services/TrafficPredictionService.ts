@@ -92,7 +92,7 @@ export class TrafficPredictionService {
                 daysBack,
                 testSize
             }, {
-                timeout: 300000 // 5 minutos
+                timeout: 300000
             });
 
             return response.data;

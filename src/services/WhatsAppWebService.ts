@@ -73,7 +73,7 @@ export class WhatsAppWebService {
             // await this.displayInitialChatsInfo();
 
             // Iniciar monitoreo periódico de canales
-            this.startChannelMonitoring();
+            // this.startChannelMonitoring();
         });
 
         // Autenticación exitosa
@@ -597,22 +597,35 @@ export class WhatsAppWebService {
 
             const autor = isChannel ? `Canal: ${chatId}` : `Grupo: ${chatId}`;
 
-            const reporte = reportesRepo.create({
-                title: `${extracted.tipo} - ${extracted.plaza}`,
-                description: `${extracted.descripcion}\n\nFuente: ${isChannel ? 'Canal' : 'Grupo'} WhatsApp\nID: ${chatId}\nMensaje: "${originalText.substring(0, 200)}${originalText.length > 200 ? '...' : ''}"`,
-                latitude: extracted.coordenadas?.latitude || defaultLat,
-                longitude: extracted.coordenadas?.longitude || defaultLng,
-                tipoReporte: tipoReporte || undefined,
-                tipoReporte_id: tipoReporte?.id || null,
-                usuarioReportador: autor,
-                estado: 'verificado',
-                fechaReporte: new Date(),
-                horaReporte: new Date(),
-                visible: true
-            });
+            // const reporte = reportesRepo.create({
+            //     title: `${extracted.tipo} - ${extracted.plaza}`,
+            //     description: `${extracted.descripcion}\n\nFuente: ${isChannel ? 'Canal' : 'Grupo'} WhatsApp\nID: ${chatId}\nMensaje: "${originalText.substring(0, 200)}${originalText.length > 200 ? '...' : ''}"`,
+            //     latitude: extracted.coordenadas?.latitude || defaultLat,
+            //     longitude: extracted.coordenadas?.longitude || defaultLng,
+            //     tipoReporte: tipoReporte || undefined,
+            //     tipoReporte_id: tipoReporte?.id || null,
+            //     usuarioReportador: autor,
+            //     estado: 'verificado',
+            //     fechaReporte: new Date(),
+            //     horaReporte: new Date(),
+            //     visible: true
+            // });
 
-            await reportesRepo.save(reporte);
-            this.notifyNewReport(reporte);
+
+            const newReporte = new Reportes();
+            newReporte.title = `${extracted.tipo} - ${extracted.plaza}`;
+            newReporte.description = extracted.descripcion;
+            newReporte.latitude = extracted.coordenadas?.latitude || defaultLat;
+            newReporte.longitude = extracted.coordenadas?.longitude || defaultLng;
+            newReporte.tipoReporte = tipoReporte!;
+            newReporte.tipoReporte_id = tipoReporte?.id;
+            newReporte.fechaReporte = new Date();
+            newReporte.horaReporte = new Date();
+
+            console.log('New report: ', newReporte);
+
+            await reportesRepo.save(newReporte);
+            this.notifyNewReport(newReporte);
 
         } catch (error) {
             console.error('❌ Error guardando reporte (modo limitado):', error);

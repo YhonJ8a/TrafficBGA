@@ -51,11 +51,14 @@ export class ReportesService {
         const ahora = new Date();
         return await this.reportesRepository.find({
             where: {
-                fechaExpiracion: MoreThan(ahora),
+                // fechaExpiracion: MoreThan(ahora),
                 visible: true,
                 expirado: false
             },
-            relations: ["tipoReporte"]
+            relations: ["tipoReporte"],
+            order: {
+                fechaReporte: "DESC"
+            }
         });
     }
 
@@ -76,7 +79,8 @@ export class ReportesService {
                 lngMin: longitudMin,
                 lngMax: longitudMax
             })
-            .andWhere("reporte.visible = :visible", { visible: true });
+            .andWhere("reporte.visible = :visible", { visible: true })
+            .orderBy("reporte.fechaReporte", "DESC");
 
         console.log('query: ', query.getQuery());
         if (soloActivos) {
@@ -117,7 +121,7 @@ export class ReportesService {
 
         if (soloActivos) {
             const ahora = new Date();
-            query.andWhere("reporte.fechaExpiracion > :ahora", { ahora })
+            query.andWhere("reporte.fechaExpiracion > :ahora", { ahora: ahora.setHours(ahora.getHours() - 12) })
                 .andWhere("reporte.expirado = :expirado", { expirado: false });
         }
 

@@ -17,12 +17,12 @@ export class GeminiService {
 
     constructor() {
         this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-        this.model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        this.model = this.genAI.getGenerativeModel({ model: 'gemini-3.1-pro-preview' });
     }
 
     async extractTrafficReport(message: string): Promise<ReportExtraction | null> {
         try {
-            const prompt = `
+            const prompt2 = `
 Eres un asistente que extrae información de reportes de tráfico en Bucaramanga, Colombia.
 
 TIPOS DE INCIDENTES VÁLIDOS (usa exactamente estos nombres):
@@ -37,12 +37,52 @@ TIPOS DE INCIDENTES VÁLIDOS (usa exactamente estos nombres):
 - Manifestacion
 - Derrumbe
 
-LUGARES CONOCIDOS EN BUCARAMANGA:
+INSTRUCCIONES:
+1. Analiza el siguiente mensaje y determina si es un reporte de tráfico
+2. Extrae: tipo de incidente, descripción breve, y lugar/dirección
+3. Si NO es un reporte de tráfico o NO tiene ubicación clara, responde solo: NO_REPORT
+4. Si SÍ es un reporte, responde en formato JSON válido
+
+MENSAJE:
+"${message}"
+
+RESPUESTA (solo JSON o NO_REPORT):
+{
+  "tipo": "tipo de incidente",
+  "descripcion": "descripción breve del incidente",
+  "plaza": "lugar específico o dirección",
+  "confianza": 0-100
+}
+`;
+
+            const prompt = `
+Eres un asistente experto en extraer información de reportes de tráfico en Bucaramanga, Colombia.
+
+TIPOS DE INCIDENTES VÁLIDOS (usa exactamente estos nombres):
+- Accidente
+- Trafico
+- Choque
+- Cierre
+- Obra
+- Transito
+- Bache
+- Inundacion
+- Manifestacion
+- Derrumbe
+
+LUGARES CONOCIDOS EN BUCARAMANGA (utiliza estos nombres exactos cuando sea posible):
 - Viaducto García Cadena
 - Autopista Floridablanca
-- Carrera 27, Carrera 33, Carrera 15, Carrera 17, Carrera 21
-- Centro
-- Cabecera
+- Autopista Bucaramanga - Floridablanca
+- Carrera 27 (especifica entre qué calles si se menciona)
+- Carrera 33 (especifica entre qué calles si se menciona)
+- Carrera 15 (especifica entre qué calles si se menciona)
+- Carrera 17 (especifica entre qué calles si se menciona)
+- Carrera 21 (especifica entre qué calles si se menciona)
+- Calle 36 (especifica entre qué carreras si se menciona)
+- Calle 45 (especifica entre qué carreras si se menciona)
+- Centro Bucaramanga
+- Cabecera del Llano
 - Provenza
 - Norte
 - Quebrada Seca
@@ -51,14 +91,81 @@ LUGARES CONOCIDOS EN BUCARAMANGA:
 - Puente de Pescadero
 - Real de Minas
 - Estadio Alfonso López
+- Parque San Pío
+- Lagos del Cacique
+- Terminal de Transportes Bucaramanga
+- Chicamocha
+- Aeropuerto Palonegro
 
-INSTRUCCIONES:
-1. Analiza el siguiente mensaje y determina si es un reporte de tráfico
-2. Extrae: tipo de incidente, descripción breve, y lugar/dirección
+REGLAS PARA EXTRAER LA UBICACIÓN CON PRECISIÓN:
+
+1. FORMATO IDEAL: Siempre que sea posible, usa el formato "Nombre_Vía con Nombre_Cruce, Bucaramanga, Santander"
+   Ejemplos:
+   - "Carrera 27 con Calle 45, Bucaramanga, Santander"
+   - "Autopista Floridablanca altura Viaducto García Cadena, Bucaramanga, Santander"
+
+2. SI SE MENCIONA INTERSECCIÓN: Usa "Calle/Carrera X con Calle/Carrera Y"
+   Ejemplo: "Calle 36 con Carrera 27, Bucaramanga, Santander"
+
+3. SI SE MENCIONA UN PUNTO DE REFERENCIA: Incluye el nombre del lugar + la vía principal
+   Ejemplo: "Autopista Floridablanca frente al Viaducto García Cadena, Bucaramanga, Santander"
+
+4. SI SE MENCIONA "ALTURA DE": Usa "Vía principal altura Punto_Referencia"
+   Ejemplo: "Carrera 27 altura Calle 45, Bucaramanga, Santander"
+
+5. SI SE MENCIONA "CERCA DE" o "FRENTE A": Usa "Vía principal cerca de/frente a Punto_Referencia"
+   Ejemplo: "Carrera 33 frente al Café Madrid, Bucaramanga, Santander"
+
+6. SI SE MENCIONA UN BARRIO: Incluye "barrio [nombre], Bucaramanga, Santander"
+   Ejemplo: "Carrera 27 barrio Cabecera, Bucaramanga, Santander"
+
+7. SIEMPRE AGREGA ", Bucaramanga, Santander" al final de la ubicación
+
+8. SI SOLO SE MENCIONA UNA VÍA SIN DETALLES: Usa "Nombre_Vía, Bucaramanga, Santander"
+   Ejemplo: "Carrera 27, Bucaramanga, Santander"
+
+9. NORMALIZA LOS NOMBRES:
+   - "cra" → "Carrera"
+   - "cl" → "Calle"
+   - "av" → "Avenida"
+   - "autopista flo" → "Autopista Floridablanca"
+   - "viaducto" → "Viaducto García Cadena"
+
+10. SI HAY NÚMEROS DE VÍA: Usa el formato "Carrera/Calle [número]"
+    Ejemplo: Si dice "cra 27 # 45-23" → "Carrera 27 con Calle 45, Bucaramanga, Santander"
+
+EJEMPLOS DE EXTRACCIÓN CORRECTA:
+
+Mensaje: "Accidente en la cra 27 con calle 45"
+Plaza: "Carrera 27 con Calle 45, Bucaramanga, Santander"
+
+Mensaje: "Trancón en autopista floridablanca llegando al viaducto"
+Plaza: "Autopista Floridablanca altura Viaducto García Cadena, Bucaramanga, Santander"
+
+Mensaje: "Choque en la 33 frente al café madrid"
+Plaza: "Carrera 33 frente al Café Madrid, Bucaramanga, Santander"
+
+Mensaje: "Obra en centro cerca al parque santander"
+Plaza: "Centro Bucaramanga cerca del Parque Santander, Bucaramanga, Santander"
+
+Mensaje: "Bache en la 15 altura de cabecera"
+Plaza: "Carrera 15 altura Cabecera del Llano, Bucaramanga, Santander"
+
+Mensaje: "Incendio de vehículo autopista llegando al viaducto garcía cadena"
+Plaza: "Autopista Floridablanca altura Viaducto García Cadena, Bucaramanga, Santander"
+
+Mensaje: "Tráfico lento en toda la carrera 27"
+Plaza: "Carrera 27, Bucaramanga, Santander"
+
+INSTRUCCIONES PRINCIPALES:
+1. Analiza el siguiente mensaje y determina si es un reporte de tráfico o incidente vial
+2. Extrae: tipo de incidente, descripción breve, y UBÍCACIÓN COMPLETA Y PRECISA
 3. Si NO es un reporte de tráfico o NO tiene ubicación clara, responde solo: NO_REPORT
-4. Si SÍ es un reporte, responde en formato JSON válido
+4. Si SÍ es un reporte, responde ÚNICAMENTE en formato JSON válido (sin markdown, sin \`\`\`json)
+5. La plaza debe ser lo más específica posible siguiendo las reglas anteriores
+6. La confianza debe ser alta (80-100) si la ubicación es clara, media (60-79) si es aproximada, baja (40-59) si es vaga
 
-MENSAJE:
+MENSAJE A ANALIZAR:
 "${message}"
 
 RESPUESTA (solo JSON o NO_REPORT):
